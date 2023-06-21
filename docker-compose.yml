@@ -1,0 +1,23 @@
+services:
+    django:
+        build: .
+        container_name: django
+        command: python manage.py runserver 0.0.0.0:8000
+        volumes:
+            - .:/usr/src/brainstorm
+        ports:
+            - "8000:8000"
+        depends_on:
+            - pg_db
+    pg_db:
+        image: postgres
+        container_name: pg_db
+        environment:
+            - POSTGRES_DB=postgres
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+
+volumes:
+    pgdata:
