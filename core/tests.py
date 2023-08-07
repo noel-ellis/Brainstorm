@@ -12,17 +12,20 @@ class TestAccountModel(TestCase):
         self.wrong_format_email = 'aftest@@'
         self.password = 'password123'
         self.username = 'testname'
+        self.limit_exceeded_username = 'a'*151
         self.user = get_user_model()
 
     def test_account_success(self):
         user = self.user.objects.create_user(email=self.email, username=self.username, password=self.password)
         self.assertEqual(user.email, self.email.lower())
         self.assertEqual(user.username, self.username)
+        self.assertEqual(user.last_login, None)
 
     def test_superaccount_success(self):
         user = self.user.objects.create_superuser(email=self.email, username=self.username, password=self.password)
         self.assertEqual(user.email, self.email.lower())
         self.assertEqual(user.username, self.username)
+        self.assertEqual(user.last_login, None)
 
     def test_account_is_active(self):
         user = self.user.objects.create_superuser(email=self.email, username=self.username, password=self.password)
@@ -46,6 +49,10 @@ class TestAccountModel(TestCase):
     def test_account_password_is_hashed(self):
         user = self.user.objects.create_user(email=self.email, username=self.username, password=self.password)
         self.assertNotEqual(user.password, self.password)
+
+    def test_account_username_character_limit_exceeded(self):
+        with self.assertRaisesMessage(ValidationError, "{'username': ['Ensure this value has at most 150 characters (it has "+str(len(self.limit_exceeded_username))+").']}"):
+            self.user.objects.create_user(email=self.email, username=self.limit_exceeded_username, password=self.password)
 
     def test_account_no_email(self):
         with self.assertRaisesMessage(ValueError, "Users must have an email address"):
