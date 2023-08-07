@@ -1,18 +1,80 @@
 from django.test import TestCase
+from django.contrib.auth import get_user_model
+from django.db.utils import IntegrityError, DataError
+from django.core.exceptions import ValidationError
 
 
-class TestModels(TestCase):
-    def account_success(self):
-        self.assertEqual(1, 1)
+class TestAccountModel(TestCase):
+    def setUp(self):
+        self.email = 'test@TeSt.com'
+        self.email2 = 'test2@TeSt.com'
+        self.limit_exceeded_email = 'a'*255 + '@test.com'
+        self.wrong_format_email = 'aftest@@'
+        self.password = 'password123'
+        self.username = 'testname'
+        self.user = get_user_model()
 
-    def folders(self):
-        self.assertEqual(2, 3)
+    def test_account_success(self):
+        user = self.user.objects.create_user(email=self.email, username=self.username, password=self.password)
+        self.assertEqual(user.email, self.email.lower())
+        self.assertEqual(user.username, self.username)
 
-    def notes(self):
+    def test_superaccount_success(self):
+        user = self.user.objects.create_superuser(email=self.email, username=self.username, password=self.password)
+        self.assertEqual(user.email, self.email.lower())
+        self.assertEqual(user.username, self.username)
+
+    def test_account_is_active(self):
+        user = self.user.objects.create_superuser(email=self.email, username=self.username, password=self.password)
+        self.assertEqual(user.is_active, True)
+        user = self.user.objects.create_user(email=self.email2, username=self.username, password=self.password)
+        self.assertEqual(user.is_active, False)
+
+    def test_account_no_duplicate_emails(self):
+        self.user.objects.create_superuser(email=self.email, username=self.username, password=self.password)
+        with self.assertRaisesMessage(IntegrityError, 'duplicate key value violates unique constraint "core_account_email_key"'):
+            self.user.objects.create_user(email=self.email, username=self.username, password=self.password)
+
+    def test_account_email_character_limit_exceeded(self):
+        with self.assertRaisesMessage(DataError, 'value too long for type character varying(255)'):
+            self.user.objects.create_user(email=self.limit_exceeded_email, username=self.username, password=self.password)
+
+    def test_account_email_wrong_format(self):
+        with self.assertRaisesMessage(ValidationError, "{'email': ['Enter a valid email address.']}"):
+            self.user.objects.create_user(email=self.wrong_format_email, username=self.username, password=self.password)
+
+    def test_account_password_is_hashed(self):
+        user = self.user.objects.create_user(email=self.email, username=self.username, password=self.password)
+        self.assertNotEqual(user.password, self.password)
+
+    def test_account_no_email(self):
+        with self.assertRaisesMessage(ValueError, "Users must have an email address"):
+            self.user.objects.create_user(email='', username=self.username, password=self.password)
+
+    def test_account_no_username(self):
+        with self.assertRaisesMessage(ValueError, "Users must have an username"):
+            self.user.objects.create_user(email=self.email, username='', password=self.password)
+
+    def test_account_no_password(self):
+        with self.assertRaisesMessage(ValueError, "Users must have a password"):
+            self.user.objects.create_user(email=self.email, username=self.username, password='')
+
+
+class TestFolderModel(TestCase):
+    def test_folders(self):
         pass
 
-    def todo_lists(self):
+
+class TestNoteModel(TestCase):
+    def test_notes(self):
         pass
 
+
+class TestTodoListModel(TestCase):
+    def test_todo_lists(self):
+        pass
+
+
+class TestTaskModel(TestCase):
     def test_tasks(self):
         pass
