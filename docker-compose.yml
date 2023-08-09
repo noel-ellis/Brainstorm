@@ -3,6 +3,11 @@ services:
         build: .
         container_name: django
         environment:
+            - EMAIL_HOST=${EMAIL_HOST}
+            - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+            - EMAIL_PORT=${EMAIL_PORT}
+            - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+            - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
             - DOCKER_ENV=True
         command: python manage.py runserver 0.0.0.0:8000
         volumes:

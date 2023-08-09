@@ -67,6 +67,16 @@ class TestAccountModel(TestCase):
         with self.assertRaisesMessage(ValueError, "Users must have a password"):
             self.user.objects.create_user(email=self.email, username=self.username, password='')
 
+class TestEmail(TestCase):
+    def test_smtp_config(self):
+        flag = send_mail(
+            "Subject",
+            "Message",
+            'testing.brainstorm@gmail.com',
+            ["testing.brainstorm@gmail.com"],
+            fail_silently=False,
+        )
+        self.assertEqual(flag, 1)
 
 class TestFolderModel(TestCase):
     def test_folders(self):

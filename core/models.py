@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
+from django.core.mail import send_mail
     
 
 class AccountManager(BaseUserManager):
@@ -19,6 +20,8 @@ class AccountManager(BaseUserManager):
         user.set_password(password)
         user.clean_fields()
         user.save(using=self._db)
+
+        user.email_user(subject='Brainstorm Account', message=f'Your Brainstorm username: {username}')
         return user
 
     def create_superuser(self, email, username, password):
@@ -54,3 +57,7 @@ class Account(AbstractBaseUser):
 
     def __str__(self):
         return self.email
+    
+    def email_user(self, subject, message, from_email=None, **kwargs):
+        """Send an email to this user."""
+        send_mail(subject, message, from_email, [self.email], **kwargs)
