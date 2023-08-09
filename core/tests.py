@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError, DataError
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 
 
 class TestAccountModel(TestCase):
@@ -39,7 +40,7 @@ class TestAccountModel(TestCase):
             self.user.objects.create_user(email=self.email, username=self.username, password=self.password)
 
     def test_account_email_character_limit_exceeded(self):
-        with self.assertRaisesMessage(DataError, 'value too long for type character varying(255)'):
+        with self.assertRaisesMessage(ValidationError, "{'email': ['Ensure this value has at most 255 characters (it has "+str(len(self.limit_exceeded_email))+").']}"):
             self.user.objects.create_user(email=self.limit_exceeded_email, username=self.username, password=self.password)
 
     def test_account_email_wrong_format(self):
@@ -66,6 +67,16 @@ class TestAccountModel(TestCase):
         with self.assertRaisesMessage(ValueError, "Users must have a password"):
             self.user.objects.create_user(email=self.email, username=self.username, password='')
 
+class TestEmail(TestCase):
+    def test_email(self):
+        flag = send_mail(
+            "Subject",
+            "Message.",
+            'testing.brainstorm@gmail.com',
+            ["testing.brainstorm@gmail.com"],
+            fail_silently=False,
+        )
+        self.assertEqual(flag, 1)
 
 class TestFolderModel(TestCase):
     def test_folders(self):
