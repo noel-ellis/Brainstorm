@@ -4,8 +4,6 @@ from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 
-from .models import Tag
-
 
 class TestAccountModel(TestCase):
     def setUp(self):
@@ -81,23 +79,3 @@ class TestEmail(TestCase):
             fail_silently=False,
         )
         self.assertEqual(flag, 1)
-
-        
-class TestFolderModel(TestCase):
-    def test_folders(self):
-        pass
-
-
-class TestNoteModel(TestCase):
-    def test_notes(self):
-        pass
-
-
-class TestTodoListModel(TestCase):
-    def test_todo_lists(self):
-        pass
-
-
-class TestTaskModel(TestCase):
-    def test_tasks(self):
-        pass
