@@ -6,9 +6,9 @@ import sys
 def main():
     """Run administrative tasks."""
     if os.environ.get('DOCKER_ENV'):
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'brainstorm.settings.docker')
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'brainstorm.settings.docker_dev')
     else:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'brainstorm.settings.dev')
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'brainstorm.settings.local_dev')
 
     try:
         from django.core.management import execute_from_command_line
