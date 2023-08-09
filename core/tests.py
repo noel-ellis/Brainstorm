@@ -31,6 +31,8 @@ class TestAccountModel(TestCase):
     def test_superaccount_is_active(self):
         user = self.user.objects.create_superuser(email=self.email, username=self.username, password=self.password)
         self.assertEqual(user.is_active, True)
+
+    def test_account_is_inactive(self):
         user = self.user.objects.create_user(email=self.email2, username=self.username, password=self.password)
         self.assertEqual(user.is_active, False)
 
