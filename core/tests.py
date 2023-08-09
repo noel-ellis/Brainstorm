@@ -16,19 +16,19 @@ class TestAccountModel(TestCase):
         self.limit_exceeded_username = 'a'*151
         self.user = get_user_model()
 
-    def test_account_success(self):
+    def test_create_account_success(self):
         user = self.user.objects.create_user(email=self.email, username=self.username, password=self.password)
         self.assertEqual(user.email, self.email.lower())
         self.assertEqual(user.username, self.username)
         self.assertEqual(user.last_login, None)
 
-    def test_superaccount_success(self):
+    def test_supercreate_account_success(self):
         user = self.user.objects.create_superuser(email=self.email, username=self.username, password=self.password)
         self.assertEqual(user.email, self.email.lower())
         self.assertEqual(user.username, self.username)
         self.assertEqual(user.last_login, None)
 
-    def test_account_is_active(self):
+    def test_superaccount_is_active(self):
         user = self.user.objects.create_superuser(email=self.email, username=self.username, password=self.password)
         self.assertEqual(user.is_active, True)
         user = self.user.objects.create_user(email=self.email2, username=self.username, password=self.password)
