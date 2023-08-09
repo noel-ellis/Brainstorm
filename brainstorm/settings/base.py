@@ -49,17 +49,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'brainstorm.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'pg_db',
-        'PORT': 5432,
-    }
-}
-
 AUTH_USER_MODEL = "core.Account"
 AUTH_PASSWORD_VALIDATORS = [
     {

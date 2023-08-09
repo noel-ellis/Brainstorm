@@ -2,6 +2,8 @@ services:
     django:
         build: .
         container_name: django
+        environment:
+            - DOCKER_ENV=True
         command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - .:/usr/src/brainstorm
