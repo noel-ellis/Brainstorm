@@ -16,7 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core.apps.CoreConfig',
+    'account.apps.AccountConfig',
 ]
 
 MIDDLEWARE = [
@@ -49,7 +49,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'brainstorm.wsgi.application'
 
-AUTH_USER_MODEL = "core.Account"
+AUTH_USER_MODEL = "account.Account"
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
