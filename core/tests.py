@@ -8,8 +8,9 @@ class TestTagModel(TestCase):
     def setUp(self):
         self.name = 'tag1'
         self.name_limit_exceeded = 'a'* 256
-        self.starts_w_spaces_name = '     a'
-        self.ends_w_spaces_name = 'a    '
+        self.name_starts_w_spaces = '     a'
+        self.name_ends_w_spaces = 'a    '
+        self.name_all_spaces = '    '
 
     def test_create_tag(self):
         tag = Tag.objects.create(name=self.name)
@@ -33,17 +34,17 @@ class TestTagModel(TestCase):
 
     def test_all_spaces_tag(self):
         with self.assertRaisesMessage(ValidationError, "Tag cannot be empty or contain whitespaces at the ends"):
-            tag = Tag.objects.create(name='     ')
+            tag = Tag.objects.create(name=self.name_all_spaces)
             tag.full_clean()
 
     def test_start_spaces_tag(self):
         with self.assertRaisesMessage(ValidationError, "Tag cannot be empty or contain whitespaces at the ends"):
-            tag = Tag.objects.create(name=self.starts_w_spaces_name)
+            tag = Tag.objects.create(name=self.name_starts_w_spaces)
             tag.full_clean()
     
     def test_end_spaces_tag(self):
         with self.assertRaisesMessage(ValidationError, "Tag cannot be empty or contain whitespaces at the ends"):
-            tag = Tag.objects.create(name=self.ends_w_spaces_name)
+            tag = Tag.objects.create(name=self.name_ends_w_spaces)
             tag.full_clean()
 
         
