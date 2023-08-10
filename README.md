@@ -1,8 +1,18 @@
+# About the project
+This is a demo project, designed with intent to test a productivity app idea I have in mind. This particular implementation comes with a set of flaws, as I currently prioritize quick proof-of-concept delivery over making an actually marketable product ready for deployment.
 # Philosophy
 - Turn ideas into actions, then manage them
 - Notes are used to brainstorm ideas, todo lists are used to manage their execution. 
 - Smooth transition between the two is crucial
 # Features
+## Security and Privacy
+Users' personal data is end-to-end encrypted. Their private key gets stored in browser sessionStorage, for enhanced user experience. 
+1. The server sends a webpage to the user, including encrypted personal data
+2. Upon receiving the webpage, JavaScript running in the browser accesses the private key (which may have been decrypted using a passphrase) stored in `sessionStorage`, decrypts the data, and then processes it
+3. The decrypted data is used to render the webpage's content for the user
+4. The user interacts with the rendered webpage, possibly modifying the data
+5. Before sending a request to the server, JavaScript code encrypts the modified data using the private key stored in `sessionStorage`
+6. The encrypted data is included in the request and sent back to the server for processing
 ## Core
 ### Accounts
 - email activation
@@ -76,7 +86,7 @@
 - create new projects (folders with todo lists), dictate documents, and add new tasks
 - add lists/tasks to focus 
 - ask for metrics
-# STACK
+# Stack
 - django
 - postgres
-- tailwind
+- Vue.js
