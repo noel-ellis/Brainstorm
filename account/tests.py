@@ -38,7 +38,7 @@ class TestAccountModel(TestCase):
 
     def test_account_no_duplicate_emails(self):
         self.account.objects.create_superuser(email=self.email, username=self.username, password=self.password)
-        with self.assertRaisesMessage(IntegrityError, 'duplicate key value violates unique constraint "core_account_email_key"'):
+        with self.assertRaisesMessage(IntegrityError, 'duplicate key value violates unique constraint "account_account_email_key"'):
             self.account.objects.create_user(email=self.email, username=self.username, password=self.password)
 
     def test_account_email_character_limit_exceeded(self):
