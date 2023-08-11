@@ -7,8 +7,6 @@ from django.core.mail import send_mail
 from datetime import datetime
 
 
-# todo:
-# add test for model update
 class TestAccountModel(TestCase):
     def setUp(self):
         self.email = 'test@TeSt.com'
