@@ -4,6 +4,8 @@ from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 
+from datetime import datetime
+
 
 class TestAccountModel(TestCase):
     def setUp(self):
@@ -21,12 +23,14 @@ class TestAccountModel(TestCase):
         self.assertEqual(account.email, self.email.lower())
         self.assertEqual(account.username, self.username)
         self.assertEqual(account.last_login, None)
+        self.assertIsInstance(account.date_joined, datetime)
 
     def test_supercreate_account_success(self):
         account = self.account.objects.create_superuser(email=self.email, username=self.username, password=self.password)
         self.assertEqual(account.email, self.email.lower())
         self.assertEqual(account.username, self.username)
         self.assertEqual(account.last_login, None)
+        self.assertIsInstance(account.date_joined, datetime)
 
     def test_superaccount_is_active(self):
         account = self.account.objects.create_superuser(email=self.email, username=self.username, password=self.password)
