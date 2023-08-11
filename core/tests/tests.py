@@ -3,7 +3,8 @@ from django.db.utils import IntegrityError, DataError
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 
-from .models import Folder
+from ..models import Folder
+from .long_test_strings import encrypted_title, encrypted_title_limit_exceeded, encrypted_title_corrupted
 
 
 class TestFolderModel(TestCase):
@@ -17,12 +18,11 @@ class TestFolderModel(TestCase):
         self.account.save()
 
         # folder
-        self.name = 'U2FsdGVkX18C1wjGTYc2PhdDPDAGkgnROcChQfGfCtakYN2ZYFahO/TKxyZbC0dpo7MSgsA+L5Ze2PlV6Zxbfhecjewjr2nmmW7I5uy/KQU5vBbWO2EQVa7JpcgCQtRCimfHqsqRRpMC48IfGAd7tjdgTVl99mSYiyZPuqaMU9MIiST5szSKEJoE+cAA2Gt3Av0ghO/IkFqQ9C3RovZbuNvsL/1oY8AsY0d+IWJGtx17mWGISJyOd3YHUJpufAd2'
+        self.name = encrypted_title
 
         # wrong data: name
-        self.name_limit_exceeded = 'U2FsdGVkX18QVsZIUai5qWu06W5oBCJCdBedpXYy9ckPvWRNIB1h8ZU5NwT7Ca+Hk+Zo7p4RKfrcks5yqp9mcNWg6/NHi0gUB8cpuUvjIHK1AYmYu4YrXvOb4HbO+la5ei/UE1JDFC/Ck+HYiOL3mCD5BH6j4J3S71j1a3p61IbZZv4amKWxZ+r5X9234yCcMjxf77KQbBq00oRCP+8e2rV1eB27T7hg2exXSSinMWEG/8Qm50W33V/UPvzFAsMtt'
-        self.name_corrupted = 'U2FsdGVkX18C1wjGTYc2PhdDPD[AGkgnROcChQfGfCtakYN2ZYFahO/TKxyZbC0dpo7MSgsA+L5Ze2PlV6Zxbfhecjewjr2nmmW7I5uy/KQU5vBbWO2EQVa7JpcgCQtRCimfHqsqRRpMC48IfGAd7tjdgTVl99mSYiyZPuqaMU9MIiST5szSKEJE+cAA2Gt3Av0ghO/IkFqQ9C3RovZbuNvsL/1oY8AsY0d+IWJGtx17mWGISJyOd3YHUJpufAd2'
-
+        self.name_limit_exceeded = encrypted_title_limit_exceeded
+        self.name_corrupted = encrypted_title_corrupted
 
     def test_create_folder(self):
         folder = Folder.objects.create(name=self.name, account=self.account)
