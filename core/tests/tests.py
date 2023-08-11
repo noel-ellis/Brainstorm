@@ -1,10 +1,12 @@
 from django.test import TestCase
-from django.db.utils import DataError
+from django.db.utils import DataError, IntegrityError
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 
-from ..models import Folder
-from .long_test_strings import encrypted_name, encrypted_name_limit_exceeded, encrypted_name_corrupted
+from ..models import Folder, Note
+from .long_test_strings import note_content, encrypted_name, encrypted_name_limit_exceeded, encrypted_name_corrupted
+
+from datetime import datetime
 
 
 class TestFolderModel(TestCase):
@@ -57,8 +59,79 @@ class TestFolderModel(TestCase):
             folder.full_clean()
 
 class TestNoteModel(TestCase):
-    def test_notes(self):
-        pass
+    def setUp(self):
+        # account setup
+        email = 'test@TeSt.com'
+        password = 'password123'
+        username = 'testname'
+        account = get_user_model().objects.create_user(email=email, username=username, password=password)
+        account.is_active = True
+        account.save()
+
+        # folder setup
+        folder_name = encrypted_name
+        self.folder = Folder.objects.create(name=folder_name, account=account)
+
+        # name
+        self.name = encrypted_name
+        self.name_limit_exceeded = encrypted_name_limit_exceeded
+        self.name_corrupted = encrypted_name_corrupted
+
+        # content
+        self.content = note_content
+
+    def test_create_note(self):
+        note = Note.objects.create(name=self.name, content=self.content, folder=self.folder)
+        self.assertIsInstance(note, Note)
+        self.assertEqual(note.name, self.name)
+        self.assertEqual(note.content, self.content)
+        self.assertEqual(note.folder, self.folder)
+        self.assertEqual(note.pinned, False)
+        self.assertIsInstance(note.date_created, datetime)
+        self.assertIsInstance(note.date_created, datetime)
+
+    def test_pin_note(self):
+        note = Note.objects.create(name=self.name, content=self.content, folder=self.folder)
+        note.save()
+        note.pinned = True
+        note.save()
+        self.assertEqual(note.pinned, True)
+
+    def test_create_note_no_folder(self):
+        with self.assertRaises(IntegrityError):
+            folder = Note.objects.create(name=self.name, content=self.content, folder=None)
+            folder.full_clean()
+
+    def test_create_note_name_empty(self):
+        with self.assertRaises(ValidationError):
+            folder = Note.objects.create(name='', content=self.content, folder=self.folder)
+            folder.full_clean()
+
+    def test_create_note_name_limit_exceeded(self):
+        with self.assertRaises(DataError):
+            Note.objects.create(name=self.name_limit_exceeded, content=self.content, folder=self.folder)
+
+    def test_create_note_name_corrupted(self):
+        with self.assertRaises(ValidationError):
+            folder = Note.objects.create(name=self.name_corrupted, content=self.content, folder=self.folder)
+            folder.full_clean()
+
+    def test_create_note_content_empty(self):
+        note = Note.objects.create(name=self.name, content='', folder=self.folder)
+        self.assertIsInstance(note, Note)
+        self.assertEqual(note.content, '')
+
+    def test_create_note_content_corrupted(self):
+        with self.assertRaises(ValidationError):
+            folder = Note.objects.create(name=self.name_corrupted, content=self.content, folder=self.folder)
+            folder.full_clean()
+
+    def test_update_note_date_updated(self):
+        note = Note.objects.create(name=self.name, content=self.content, folder=self.folder)
+        note.save()
+        note.content = ''
+        note.save()
+        self.assertNotEqual(note.date_created, note.date_updated)
 
 
 class TestTodoListModel(TestCase):
