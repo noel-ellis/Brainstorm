@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 
 from ..models import Folder
-from .long_test_strings import encrypted_title, encrypted_title_limit_exceeded, encrypted_title_corrupted
+from .long_test_strings import encrypted_name, encrypted_name_limit_exceeded, encrypted_name_corrupted
 
 
 class TestFolderModel(TestCase):
@@ -18,11 +18,11 @@ class TestFolderModel(TestCase):
         self.account.save()
 
         # folder
-        self.name = encrypted_title
+        self.name = encrypted_name
 
         # wrong data: name
-        self.name_limit_exceeded = encrypted_title_limit_exceeded
-        self.name_corrupted = encrypted_title_corrupted
+        self.name_limit_exceeded = encrypted_name_limit_exceeded
+        self.name_corrupted = encrypted_name_corrupted
 
     def test_create_folder(self):
         folder = Folder.objects.create(name=self.name, account=self.account)
