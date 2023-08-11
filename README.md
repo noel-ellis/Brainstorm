@@ -18,8 +18,8 @@ Users' personal data is end-to-end encrypted. Their private key gets stored in b
 - email activation
 ### Folders
 - multilevel
-- colors/icons
-- tags
+- colors/icons (planned)
+- tags (planned)
 ### Todo lists
 > Should projects have unique names? Considering the planned voice assistant
 - attached to a folder
@@ -33,7 +33,7 @@ Users' personal data is end-to-end encrypted. Their private key gets stored in b
 > Should note tasks be differentiated by the notes they attached to? ***Yes, it's reflected in the db***
 > How to trace some line in the note to its Task object?***Markdown contains ==task_id== and not the title***
 - markdown
-- tags
+- tags (planned)
 - tasks can be created inside a note; they are associated with a folder's todo list 
 - pin
 ### Tasks
