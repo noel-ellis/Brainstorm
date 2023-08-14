@@ -3,10 +3,10 @@ from django.db.utils import DataError, IntegrityError
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 
-from ..models import Folder, Note
+from ..models import Folder, Note, TodoList
 from .long_test_strings import note_content, encrypted_name, encrypted_name_limit_exceeded, encrypted_name_corrupted
 
-from datetime import datetime
+from datetime import datetime, date
 
 
 class TestFolderModel(TestCase):
@@ -99,13 +99,13 @@ class TestNoteModel(TestCase):
 
     def test_create_note_no_folder(self):
         with self.assertRaises(IntegrityError):
-            folder = Note.objects.create(name=self.name, content=self.content, folder=None)
-            folder.full_clean()
+            note = Note.objects.create(name=self.name, content=self.content, folder=None)
+            note.full_clean()
 
     def test_create_note_name_empty(self):
         with self.assertRaises(ValidationError):
-            folder = Note.objects.create(name='', content=self.content, folder=self.folder)
-            folder.full_clean()
+            note = Note.objects.create(name='', content=self.content, folder=self.folder)
+            note.full_clean()
 
     def test_create_note_name_limit_exceeded(self):
         with self.assertRaises(DataError):
@@ -113,8 +113,8 @@ class TestNoteModel(TestCase):
 
     def test_create_note_name_corrupted(self):
         with self.assertRaises(ValidationError):
-            folder = Note.objects.create(name=self.name_corrupted, content=self.content, folder=self.folder)
-            folder.full_clean()
+            note = Note.objects.create(name=self.name_corrupted, content=self.content, folder=self.folder)
+            note.full_clean()
 
     def test_create_note_content_empty(self):
         note = Note.objects.create(name=self.name, content='', folder=self.folder)
@@ -123,8 +123,8 @@ class TestNoteModel(TestCase):
 
     def test_create_note_content_corrupted(self):
         with self.assertRaises(ValidationError):
-            folder = Note.objects.create(name=self.name_corrupted, content=self.content, folder=self.folder)
-            folder.full_clean()
+            note = Note.objects.create(name=self.name_corrupted, content=self.content, folder=self.folder)
+            note.full_clean()
 
     def test_update_note_date_updated(self):
         note = Note.objects.create(name=self.name, content=self.content, folder=self.folder)
