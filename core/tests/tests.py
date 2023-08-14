@@ -82,6 +82,7 @@ class TestNoteModel(TestCase):
 
     def test_create_note(self):
         note = Note.objects.create(name=self.name, content=self.content, folder=self.folder)
+        note.save()
         self.assertIsInstance(note, Note)
         self.assertEqual(note.name, self.name)
         self.assertEqual(note.content, self.content)
