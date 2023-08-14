@@ -13,3 +13,23 @@ class Note(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
+
+    
+class TodoList(models.Model):
+    HIGH = 'h'
+    MEDIUM = 'm'
+    LOW = 'l'
+    NONE = 'n'
+    TODOLIST_PRIORITY_CHOICES = [
+        (HIGH, "High"),
+        (MEDIUM, "Medium"),
+        (LOW, "Low"),
+        (NONE, "None"),
+    ]
+
+    name = models.CharField(max_length=256, blank=False, validators=[validate_encoded_field, validate_non_empty])
+    priority = models.CharField(max_length=1, choices=TODOLIST_PRIORITY_CHOICES, default=NONE)
+    due_date = models.DateField(null=True, blank=True, default=None)
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+    folder = models.ForeignKey('Folder', on_delete=models.CASCADE)

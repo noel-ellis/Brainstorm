@@ -137,8 +137,93 @@ class TestNoteModel(TestCase):
 
 
 class TestTodoListModel(TestCase):
-    def test_todo_lists(self):
-        pass
+    def setUp(self):
+        # account setup
+        email = 'test@TeSt.com'
+        password = 'password123'
+        username = 'testname'
+        account = get_user_model().objects.create_user(email=email, username=username, password=password)
+        account.is_active = True
+        account.save()
+
+        # folder
+        name = encrypted_name
+        self.folder = Folder.objects.create(name=name, account=account)
+
+        # todo list name
+        self.name = encrypted_name
+        self.name_limit_exceeded = encrypted_name_limit_exceeded
+        self.name_corrupted = encrypted_name_corrupted
+        
+        # todo list priority
+        self.priority = 'h'
+        self.priority_alt = 'm'
+        self.priority_wrong_letter = 'a'
+        self.priority_wrong_type = 1
+        self.priority_wrong_length = 'mm'
+
+        # todo list due_date
+        self.due_date = date(2024, 10, 9)
+
+    def test_create_todo_list(self):
+        todo_list = TodoList(name=self.name, priority=self.priority, folder=self.folder)
+        todo_list.save()
+        self.assertIsInstance(todo_list, TodoList)
+        self.assertEqual(todo_list.name, self.name)
+        self.assertEqual(todo_list.priority, self.priority)
+        self.assertIsInstance(todo_list.date_created, datetime)
+        self.assertIsInstance(todo_list.date_updated, datetime)
+        self.assertEqual(todo_list.folder_id, self.folder.id)
+
+    def test_create_todo_list_add_duedate(self):
+        todo_list = TodoList(name=self.name, priority=self.priority, due_date=self.due_date, folder=self.folder)
+        self.assertIsInstance(todo_list, TodoList)
+        self.assertEqual(todo_list.due_date, self.due_date)
+        
+    def test_create_note_no_folder(self):
+        with self.assertRaises(ValidationError):
+            todo_list = TodoList(name=self.name, priority=self.priority)
+            todo_list.full_clean()
+
+    def test_create_note_name_empty(self):
+        with self.assertRaises(ValidationError):
+            todo_list = TodoList(name='', priority=self.priority, folder=self.folder)
+            todo_list.full_clean()
+
+    def test_create_note_name_limit_exceeded(self):
+        with self.assertRaises(ValidationError):
+            todo_list = TodoList(name=self.name_limit_exceeded, priority=self.priority, folder=self.folder)
+            todo_list.full_clean()
+
+    def test_create_note_name_corrupted(self):
+        with self.assertRaises(ValidationError):
+            todo_list = TodoList(name=self.name_corrupted, priority=self.priority, folder=self.folder)
+            todo_list.full_clean()
+
+    def test_create_note_no_priority(self):
+        todo_list = TodoList(name=self.name, folder=self.folder)
+        self.assertIsInstance(todo_list, TodoList)
+        self.assertEqual(todo_list.priority, 'n')
+
+    def test_create_note_wrong_priority(self):
+        with self.assertRaises(ValidationError):
+            todo_list = TodoList(name=self.name, priority=self.priority_wrong_letter, folder=self.folder)
+            todo_list.full_clean()
+
+        with self.assertRaises(ValidationError):
+            todo_list = TodoList(name=self.name, priority=self.priority_wrong_type, folder=self.folder)
+            todo_list.full_clean()
+
+        with self.assertRaises(ValidationError):
+            todo_list = TodoList(name=self.name, priority=self.priority_wrong_length, folder=self.folder)
+            todo_list.full_clean()
+
+    def test_update_todo_list_date_updated(self):
+        todo_list = TodoList.objects.create(name=self.name, priority=self.priority, folder=self.folder)
+        todo_list.save()
+        todo_list.priority = self.priority_alt
+        todo_list.save()
+        self.assertNotEqual(todo_list.date_created, todo_list.date_updated)
 
 
 class TestTaskModel(TestCase):
