@@ -110,7 +110,8 @@ class TestNoteModel(TestCase):
 
     def test_create_note_name_limit_exceeded(self):
         with self.assertRaises(DataError):
-            Note.objects.create(name=self.name_limit_exceeded, content=self.content, folder=self.folder)
+            note = Note.objects.create(name=self.name_limit_exceeded, content=self.content, folder=self.folder)
+            note.full_clean()
 
     def test_create_note_name_corrupted(self):
         with self.assertRaises(ValidationError):
