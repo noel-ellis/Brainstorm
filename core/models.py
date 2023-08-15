@@ -4,12 +4,14 @@ from django.core.exceptions import ValidationError
 from .validators import validate_encoded_field, validate_non_empty, validate_date_past_or_present
 
 
-# TODO: append save() method with clean() for each model
-
 class Folder(models.Model):
     name = models.CharField(max_length=256, blank=False, validators=[validate_encoded_field, validate_non_empty])
     account = models.ForeignKey('account.Account', on_delete=models.CASCADE, limit_choices_to={"is_active": True})
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, default=None)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Note(models.Model):
@@ -19,6 +21,10 @@ class Note(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class TodoList(models.Model):
@@ -39,6 +45,10 @@ class TodoList(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Task(models.Model):
@@ -71,3 +81,6 @@ class Task(models.Model):
         
         super().clean()
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
