@@ -1,6 +1,10 @@
 from django.db import models
-from .validators import validate_encoded_field, validate_non_empty
+from django.core.exceptions import ValidationError
 
+from .validators import validate_encoded_field, validate_non_empty, validate_date_past_or_present
+
+
+# TODO: append save() method with clean() for each model
 
 class Folder(models.Model):
     name = models.CharField(max_length=256, blank=False, validators=[validate_encoded_field, validate_non_empty])
@@ -35,3 +39,35 @@ class TodoList(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
+
+
+class Task(models.Model):
+    HIGH = 'h'
+    MEDIUM = 'm'
+    LOW = 'l'
+    NONE = 'n'
+    TASK_PRIORITY_CHOICES = [
+        (HIGH, "High"),
+        (MEDIUM, "Medium"),
+        (LOW, "Low"),
+        (NONE, "None"),
+    ]
+
+    name = models.CharField(max_length=256, blank=False, validators=[validate_encoded_field, validate_non_empty])
+    priority = models.CharField(max_length=1, choices=TASK_PRIORITY_CHOICES, default=NONE)
+    failed = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now_add=True)
+    due_date = models.DateField(null=True, blank=True, default=None)
+    date_closed = models.DateField(null=True, blank=True, default=None, validators=[validate_date_past_or_present])
+
+    parent_task = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, default=None)
+    note = models.ForeignKey('Note', on_delete=models.CASCADE, null=True, blank=True, default=None)
+    # allows for checkboxes in notes to lose their attached tasks, if original todo_list is deleted
+    todo_list = models.ForeignKey('TodoList', on_delete=models.CASCADE)
+
+    def clean(self):
+        if self.failed and self.date_closed == None:
+            raise ValidationError("a task can't be open and failed at the same time")
+        
+        super().clean()
+
