@@ -149,6 +149,7 @@ class TestTodoListModel(TestCase):
         # folder
         name = encrypted_name
         self.folder = Folder.objects.create(name=name, account=account)
+        self.folder.save()
 
         # todo list name
         self.name = encrypted_name
